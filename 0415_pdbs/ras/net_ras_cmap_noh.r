@@ -1,7 +1,8 @@
 ## name: net_ras_cmap_noh.r
 ## date: 01/26/2016
 
-## Here I color edges that either significant diff OR more than 2 fold diff
+## color edges by significant diff of wilcox.test
+## use the same cutoff as dynamic networks - p.cutoff 0.05
 
 library(abind)
 
@@ -16,28 +17,26 @@ source("/Users/hyangl/project/ras/results/2015/functions/get.signif.R")
 source("/Users/hyangl/project/ras/results/2015/functions/pairwise.signif.R")
 source("/Users/hyangl/project/ras/results/2015/functions/pairwise.magnitude.R")
 
-# !! here p.cutoff = 0.01 is used !! (cij network we use 0.05 and 2-fold)
-p.cutoff <- 0.01
-cutoff_magnitude=1/2
+p.cutoff <- 0.05
 ifabs = T
 
 cols <- tbl_ras[,"ligandColors"]
 membership_ras <- as.numeric(ali["membership_ras",ali["membership_ras",]!="0"])
 
-# build dummy networks!
-cij_gtp <- filter.dccm(cmap_ras_noh[["6"]][,,cols == "red"], cutoff.cij=0)
-cij_gdp <- filter.dccm(cmap_ras_noh[["6"]][,,cols == "green"], cutoff.cij=0)
-cna_gtp <- cna(cij_gtp, cutoff.cij=0)
-cna_gdp <- cna(cij_gdp, cutoff.cij=0)
-
 net_complete <- lapply(cmap_ras_noh, function(x) {
-  community_cij_ras_gtp <- get.community.cij(cij=x[,,cols == "purple"],
+  community_cij_ras_gtp <- get.community.cij(cij=x[,,cols == "red"],
     member=membership_ras, cutoff.cij=0, abs=ifabs)
   community_cij_ras_gdp <- get.community.cij(cij=x[,,cols == "green"],
     member=membership_ras, cutoff.cij=0, abs=ifabs)
   # calculate p-value and whether magnitude diff larger than cutoff
   p_community_cij_ras <- pairwise.signif(list(gtp=community_cij_ras_gtp$raw,
     gdp=community_cij_ras_gdp$raw), method="wilcox.test")
+  # calculate average cij from different structure cmap
+  cij_gtp <- filter.dccm(x[,,cols == "red"], cutoff.cij=0)
+  cij_gdp <- filter.dccm(x[,,cols == "green"], cutoff.cij=0)  
+  # build networks
+  cna_gtp <- cna(cij_gtp, cutoff.cij=0)
+  cna_gdp <- cna(cij_gdp, cutoff.cij=0)
   # remodel networks
   nets_ras_gtp_vs_gdp_signif <- remodel.cna(list(gtp=cna_gtp,gdp=cna_gdp),
     member=membership_ras, method="sum", col.edge="significance", scut=4,
@@ -55,32 +54,30 @@ save(net_complete, net_ras_cmap_noh,
 ##### plot!
 source("/Users/hyangl/project/ras/results/2015/functions/plot.nets.R")
 load("/Users/hyangl/project/ras/results/2016/0415_pdbs/ras/net_ras_cmap_noh.RData")
-load("/Users/hyangl/project/ras/results/2015/0730_ras_transducin/network/layout_2d.RData")
-layout_2d <- layout_2d[1:9,]
+load("/Users/hyangl/project/ras/results/2016/info/layout_2d.RData")
 
-plot.nets(net_ras_cmap_noh, layout_2d=layout_2d, width=0.1)
-mtext("ras_cmap_noh_3_7", outer=T, line=-5)
-dev.copy2pdf(file="figures/nets_ras_cmap_noh_3_7.pdf")
+plot.nets(net_ras_cmap_noh, layout_2d=layout_ras, width=0.2)
+mtext("ras_cmap_noh_3_6", outer=T, line=-5)
+dev.copy2pdf(file="figures/nets_ras_cmap_noh_3_6.pdf")
 
 ## new plot
 
 source("/Users/hyangl/project/ras/results/2015/functions/trim.cna.R")
 load("/Users/hyangl/project/ras/results/2016/0415_pdbs/ras/net_ras_cmap_noh.RData")
-load("/Users/hyangl/project/ras/results/2015/0730_ras_transducin/network/layout_2d.RData")
-layout_2d <- layout_2d[1:9,]
+load("/Users/hyangl/project/ras/results/2016/info/layout_2d.RData")
 cutoff = 0.001
-width = 0.1
+width = 0.2
 
 layout(matrix(1:length(net_ras_cmap_noh), nrow=1))
 invisible(lapply(as.list(names(net_ras_cmap_noh)), function(x) {
   net_ras <- trim.cna(net_ras_cmap_noh[[x]], cutoff_community=cutoff,
     membership = net_ras_cmap_noh[[x]][[1]]$communities$membership)
-  plot.cna(net_ras, layout=layout_2d, w=(E(net_ras$community.network)$weight) * width, 
+  plot.cna(net_ras, layout=layout_ras, w=(E(net_ras$community.network)$weight) * width, 
     vertex.label=NA, edge.label=NA)
   mtext(x, outer=F, line=-30)
   }))
-mtext("ras_cmap_noh_3_7", outer=T, line=-27)
-dev.copy2pdf(file="figures/nets_ras_cmap_noh_3_7_trimmed.pdf")
+mtext("ras_cmap_noh_3_6", outer=T, line=-27)
+dev.copy2pdf(file="figures/nets_ras_cmap_noh_3_6_trimmed.pdf")
 
 
 
