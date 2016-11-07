@@ -15,7 +15,6 @@ source("/Users/hyangl/project/ras/results/2015/functions/community.cij.R")
 source("/Users/hyangl/project/ras/results/2015/functions/remodel.cna.R")
 source("/Users/hyangl/project/ras/results/2015/functions/get.signif.R")
 source("/Users/hyangl/project/ras/results/2015/functions/pairwise.signif.R")
-source("/Users/hyangl/project/ras/results/2015/functions/pairwise.magnitude.R")
 
 p.cutoff <- 0.05
 ifabs = T
