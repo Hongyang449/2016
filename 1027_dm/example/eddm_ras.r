@@ -154,7 +154,7 @@ dm_ras <- dm.aa[gaps.res$f.inds, gaps.res$f.inds, ]
 save(dm_ras,
      file="dm.RData")
 
-save(gaps.res, gaps.pos, grps, res2b, res3b, res4b, 
+save(pdbs.aa, gaps.res, gaps.pos, grps, res2b, res3b, res4b, 
      dm.ca, dm.aa, dm.aa.cut, dm.aa.masked, cm, xyz, 
      pc.ca, pc.aa, pc.aa.cut, pc.aa.masked, pc.cm, pc,
      file="eddm_ras.RData")
