@@ -4,12 +4,7 @@
 ## Here I perform eddm analysis of all-atom distance matrices of ras pdbs
 
 load("/Users/hyangl/project/ras/results/2016/1027_dm/ras/dmaa.RData")
-load("/Users/hyangl/project/ras/results/2015/0730_ras_transducin/comparison/ali.RData")
-
-membership_ras <- as.numeric(ali["membership_ras",ali["membership_ras",]!="0"])
-community_ras <- c("a1/b1-b3", "PL", "SI", "SII", "b4-b6", "a3", "a4", "a5", "L8")
-memname_ras <- membership_ras
-for (i in 1:length(community_ras)) { memname_ras[membership_ras==i] <- community_ras[i]}
+load("/Users/hyangl/project/ras/results/2016/info/res_ras.RData")
 
 eddm_ras <- eddm(pdbs_ras_aa, dm=dmaa_ras, grps=grps)
 # aa321
@@ -23,28 +18,30 @@ subseteddm_ras_gxp_beta1.0 <- subset.eddm(eddm_ras, grps=c(1,3), alpha=0.05, bet
 # add sse annotations to the table
 i1 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta1.0 [, "i"]]
 i2 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta1.0 [, "j"]]
-community_i <- memname_ras[i1]; community_j <- memname_ras[i2]
+community_i <- names(membership_ras)[i1]; community_j <- names(membership_ras)[i2]
 subseteddm_ras_gxp_beta1.0  <- cbind(subseteddm_ras_gxp_beta1.0 [, 1:4], community_i, community_j,
   subseteddm_ras_gxp_beta1.0 [5:ncol(subseteddm_ras_gxp_beta1.0 )])
 
 # summary the number of highlighted pairs between communities
-tmp <- subseteddm_ras_gxp_beta1.0[ ,c("community_j", "community_i")]
+tmp <- subseteddm_ras_gxp_beta1.0[, c("community_j", "community_i")]
 colnames(tmp) <- c("community_i", "community_j")
-tmp <- rbind(subseteddm_ras_gxp_beta1.0[,c("community_i", "community_j")], tmp)
-tbl_ras_gxp_beta1.0 <- table(tmp)
-tbl_ras_gxp_beta1.0 <- tbl_ras_gxp_beta1.0[, rownames(tbl_ras_gxp_beta1.0)]
-diag(tbl_ras_gxp_beta1.0[, rownames(tbl_ras_gxp_beta1.0)]) <-
-  diag(tbl_ras_gxp_beta1.0[, rownames(tbl_ras_gxp_beta1.0)])/2
+tmp <- rbind(subseteddm_ras_gxp_beta1.0[, c("community_i", "community_j")], tmp)
+tmp <- table(tmp)
+tbl_ras_gxp_beta1.0 <- matrix(0, length(community_ras), length(community_ras))
+rownames(tbl_ras_gxp_beta1.0) <- community_ras; colnames(tbl_ras_gxp_beta1.0) <- community_ras;
+tbl_ras_gxp_beta1.0[rownames(tmp), colnames(tmp)] <- tmp
+diag(tbl_ras_gxp_beta1.0) <- diag(tbl_ras_gxp_beta1.0)/2
 tbl_ras_gxp_beta1.0
-#           community_j
-#community_i a1/b1-b3 a3 b4-b6 PL SI SII
-#   a1/b1-b3        0  0     0  1  5   0
-#   a3              0  1     0  0  0   5
-#   b4-b6           0  0     1  0  0   0
-#   PL              1  0     0  0  6   6
-#   SI              5  0     0  6  3  13
-#   SII             0  5     0  6 13  11
-
+#         a1/b1-b3 PL SI SII b4-b6 a3 a4 a5 L8
+#a1/b1-b3        0  1  5   0     0  0  0  0  0
+#PL              1  0  6   6     0  0  0  0  0
+#SI              5  6  3  13     0  0  0  0  0
+#SII             0  6 13  11     0  5  0  0  0
+#b4-b6           0  0  0   0     1  0  0  0  0
+#a3              0  0  0   5     0  1  0  0  0
+#a4              0  0  0   0     0  0  0  0  0
+#a5              0  0  0   0     0  0  0  0  0
+#L8              0  0  0   0     0  0  0  0  0
 sum(diag(tbl_ras_gxp_beta1.0))
 #[1] 16
 sum(tbl_ras_gxp_beta1.0[upper.tri(tbl_ras_gxp_beta1.0)])
@@ -66,22 +63,21 @@ subseteddm_ras_gxp_beta0.5 <- subset.eddm(eddm_ras, grps=c(1,3), alpha=0.05, bet
 # add sse annotations to the table
 i1 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta0.5 [, "i"]]
 i2 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta0.5 [, "j"]]
-community_i <- memname_ras[i1]; community_j <- memname_ras[i2]
+community_i <- names(membership_ras)[i1]; community_j <- names(membership_ras)[i2]
 subseteddm_ras_gxp_beta0.5  <- cbind(subseteddm_ras_gxp_beta0.5 [, 1:4], community_i, community_j,
   subseteddm_ras_gxp_beta0.5 [5:ncol(subseteddm_ras_gxp_beta0.5 )])
 
 # summary the number of highlighted pairs between communities
-tmp <- subseteddm_ras_gxp_beta0.5[ ,c("community_j", "community_i")]
+tmp <- subseteddm_ras_gxp_beta0.5[, c("community_j", "community_i")]
 colnames(tmp) <- c("community_i", "community_j")
-tmp <- rbind(subseteddm_ras_gxp_beta0.5[,c("community_i", "community_j")], tmp)
-tbl_ras_gxp_beta0.5 <- table(tmp)
-tbl_ras_gxp_beta0.5 <- tbl_ras_gxp_beta0.5[, rownames(tbl_ras_gxp_beta0.5)]
-diag(tbl_ras_gxp_beta0.5[, rownames(tbl_ras_gxp_beta0.5)]) <-
-  diag(tbl_ras_gxp_beta0.5[, rownames(tbl_ras_gxp_beta0.5)])/2
-tbl_ras_gxp_beta0.5 <- tbl_ras_gxp_beta0.5[unique(memname_ras), unique(memname_ras)]
+tmp <- rbind(subseteddm_ras_gxp_beta0.5[, c("community_i", "community_j")], tmp)
+tmp <- table(tmp)
+tbl_ras_gxp_beta0.5 <- matrix(0, length(community_ras), length(community_ras))
+rownames(tbl_ras_gxp_beta0.5) <- community_ras; colnames(tbl_ras_gxp_beta0.5) <- community_ras;
+tbl_ras_gxp_beta0.5[rownames(tmp), colnames(tmp)] <- tmp
+diag(tbl_ras_gxp_beta0.5) <- diag(tbl_ras_gxp_beta0.5)/2
 tbl_ras_gxp_beta0.5
-#           community_j
-#community_i a1/b1-b3 PL SI SII b4-b6 a3 L8 a4 a5
+#            a1/b1-b3 PL SI SII b4-b6 a3 L8 a4 a5
 #   a1/b1-b3        9  1  7  11     0  0  0  0  4
 #   PL              1  0  9  15     0  0  0  0  0
 #   SI              7  9 11  27     0  0  0  0  0
@@ -91,11 +87,11 @@ tbl_ras_gxp_beta0.5
 #   L8              0  0  0   0     2  0  0  0  0
 #   a4              0  0  0   0     0  2  0  0  0
 #   a5              4  0  0   0     0  0  0  0  0
-
 sum(diag(tbl_ras_gxp_beta0.5))
-#[1] 51 intro community
+#[1] 51 intra-community
 sum(tbl_ras_gxp_beta0.5[upper.tri(tbl_ras_gxp_beta0.5)])
-#[1] 92 inter community
+#[1] 92 inter-community
+
 # Here we cannot say eddm highlights more inter-group pairs than intra-group pairs!
 # In fact we find more intra pairs - fisher.test
 sum(apply(table(memname_ras),1, function(x) { x*(x-1)/2 })) - 51
