@@ -18,7 +18,8 @@ subseteddm_ras_gxp_beta1.0 <- subset.eddm(eddm_ras, grps=c(1,3), alpha=0.05, bet
 # add sse annotations to the table
 i1 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta1.0 [, "i"]]
 i2 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta1.0 [, "j"]]
-community_i <- names(membership_ras)[i1]; community_j <- names(membership_ras)[i2]
+tmp = names(membership_ras); names(tmp) = resno_ras
+community_i <- tmp[as.character(i1)]; community_j <- tmp[as.character(i2)]
 subseteddm_ras_gxp_beta1.0  <- cbind(subseteddm_ras_gxp_beta1.0 [, 1:4], community_i, community_j,
   subseteddm_ras_gxp_beta1.0 [5:ncol(subseteddm_ras_gxp_beta1.0 )])
 
@@ -63,7 +64,8 @@ subseteddm_ras_gxp_beta0.5 <- subset.eddm(eddm_ras, grps=c(1,3), alpha=0.05, bet
 # add sse annotations to the table
 i1 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta0.5 [, "i"]]
 i2 <- pdbs_ras_aa$resno[1, subseteddm_ras_gxp_beta0.5 [, "j"]]
-community_i <- names(membership_ras)[i1]; community_j <- names(membership_ras)[i2]
+tmp = names(membership_ras); names(tmp) = resno_ras
+community_i <- tmp[as.character(i1)]; community_j <- tmp[as.character(i2)]
 subseteddm_ras_gxp_beta0.5  <- cbind(subseteddm_ras_gxp_beta0.5 [, 1:4], community_i, community_j,
   subseteddm_ras_gxp_beta0.5 [5:ncol(subseteddm_ras_gxp_beta0.5 )])
 
@@ -94,9 +96,9 @@ sum(tbl_ras_gxp_beta0.5[upper.tri(tbl_ras_gxp_beta0.5)])
 
 # Here we cannot say eddm highlights more inter-group pairs than intra-group pairs!
 # In fact we find more intra pairs - fisher.test
-sum(apply(table(memname_ras),1, function(x) { x*(x-1)/2 })) - 51
-#[1] 1787 total number of intra pairs
-166 * (166-1) /2
+sum(apply(table(membership_ras),1, function(x) { x*(x-1)/2 }))
+#[1] 1838 total number of intra pairs
+length(membership_ras) * (length(membership_ras)-1) /2
 #[1] 13695 total number of intra and inter pairs
 
 # SII and a3

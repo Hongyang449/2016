@@ -1,5 +1,5 @@
 #+ name, include=FALSE
-## name: eddm_sca_pairs.r
+## name: eddm_sca_pairs_ras.r
 ## date: 11/11/2016 
 
 #'---
@@ -104,7 +104,7 @@ fisher.test(matrix(c( sum(pairs_sca %in% pairs_eddm), 100-sum(pairs_sca %in% pai
 
 #+ close, include=TRUE, eval=FALSE
 library(rmarkdown)
-render("eddm_sca_pairs.r", "pdf_document", clean=TRUE)
+render("eddm_sca_pairs_ras.r", "pdf_document", clean=TRUE)
 
 #'
 #' ## Information About the Current Bio3D Session
